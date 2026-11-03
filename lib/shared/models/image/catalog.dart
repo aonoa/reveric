@@ -19,7 +19,8 @@ class ImageModelCatalogEntry {
   final ImageRequestDefaults requestDefaults;
 }
 
-const imageModelsCatalog = <String, ImageModelCatalogEntry>{
+/// 运行时目录：获取模型后可登记站点返回的动态型号。
+final imageModelsCatalog = <String, ImageModelCatalogEntry>{
   // https://agnes-ai.com/zh-Hans/docs/agnes-image-20-flash
   'agnes-image-2.0-flash': ImageModelCatalogEntry(
     capabilities: ImageModelCapabilities(
