@@ -39,6 +39,7 @@ enum AiProviderType {
   xai,
   anthropic,
   qwen,
+  qwen_token_plan,
   gemini,
   deepseek,
   moonshot,
@@ -55,9 +56,9 @@ enum AiProviderType {
 
 enum ReasoningEffort { none, low, medium, high }
 
-enum AiModelKind { chat, image, embedding, video, audio }
+enum AiModelKind { chat, image, video, audio }
 
-enum AiModelRole { planner, writer, segmenter }
+enum AiModelRole { planner, writer }
 
 /// 渠道上的型号 ID 由谁决定。
 enum ModelIdSource {
@@ -77,7 +78,7 @@ class AiProviderTypeConfig {
   final VideoProtocol? videoProtocol;
   final AudioProtocol? audioProtocol;
 
-  /// 不经过媒体协议的能力（chat / embedding）。
+  /// 不经过媒体协议的能力（chat）。
   final Set<AiModelKind> _textModelKinds;
 
   const AiProviderTypeConfig({
@@ -100,10 +101,6 @@ class AiProviderTypeConfig {
 }
 
 const Set<AiModelKind> _chatOnlyKinds = {AiModelKind.chat};
-const Set<AiModelKind> _chatEmbeddingKinds = {
-  AiModelKind.chat,
-  AiModelKind.embedding,
-};
 
 const Map<AiProviderType, AiProviderTypeConfig> aiProviderTypeConfigs = {
   AiProviderType.atlascloud: AiProviderTypeConfig(
@@ -118,7 +115,7 @@ const Map<AiProviderType, AiProviderTypeConfig> aiProviderTypeConfigs = {
   AiProviderType.openai: AiProviderTypeConfig(
     displayName: 'OpenAI',
     modelIdSource: ModelIdSource.open,
-    textModelKinds: _chatEmbeddingKinds,
+    textModelKinds: _chatOnlyKinds,
     imageProtocol: ImageProtocol.openai_images,
   ),
   AiProviderType.codex: AiProviderTypeConfig(
@@ -157,7 +154,7 @@ const Map<AiProviderType, AiProviderTypeConfig> aiProviderTypeConfigs = {
   AiProviderType.openrouter: AiProviderTypeConfig(
     displayName: 'OpenRouter',
     modelIdSource: ModelIdSource.registered,
-    textModelKinds: _chatEmbeddingKinds,
+    textModelKinds: _chatOnlyKinds,
     imageProtocol: ImageProtocol.openrouter_image,
     videoProtocol: VideoProtocol.openrouter_video,
     audioProtocol: AudioProtocol.openrouter_speech,
@@ -182,10 +179,19 @@ const Map<AiProviderType, AiProviderTypeConfig> aiProviderTypeConfigs = {
     videoProtocol: VideoProtocol.wan_video,
     audioProtocol: AudioProtocol.qwen_tts,
   ),
+  AiProviderType.qwen_token_plan: AiProviderTypeConfig(
+    displayName: 'Qwen Token Plan',
+    modelIdSource: ModelIdSource.open,
+    textModelKinds: _chatOnlyKinds,
+    imageProtocol: ImageProtocol.qwen_image,
+    videoProtocol: VideoProtocol.wan_video,
+    audioProtocol: AudioProtocol.qwen_tts,
+    fixedBaseUrl: true,
+  ),
   AiProviderType.gemini: AiProviderTypeConfig(
     displayName: 'Gemini',
     modelIdSource: ModelIdSource.open,
-    textModelKinds: _chatEmbeddingKinds,
+    textModelKinds: _chatOnlyKinds,
     imageProtocol: ImageProtocol.gemini_image,
   ),
   AiProviderType.deepseek: AiProviderTypeConfig(
@@ -206,7 +212,7 @@ const Map<AiProviderType, AiProviderTypeConfig> aiProviderTypeConfigs = {
   AiProviderType.doubao: AiProviderTypeConfig(
     displayName: 'Doubao',
     modelIdSource: ModelIdSource.open,
-    textModelKinds: _chatEmbeddingKinds,
+    textModelKinds: _chatOnlyKinds,
     imageProtocol: ImageProtocol.ark_image,
     videoProtocol: VideoProtocol.ark_video,
   ),
@@ -267,6 +273,8 @@ final List<AiProviderType> customAiProviderTypes = List.unmodifiable(
 );
 
 String aiProviderFixedBaseUrl(AiProviderType type) => switch (type) {
+  AiProviderType.qwen_token_plan =>
+    'https://token-plan.maas.qianwenaiapi.com/compatible-mode/v1',
   AiProviderType.metaso => 'https://metaso.cn/api/minimax',
   AiProviderType.api88 => 'https://api.88api.ai/v1',
   AiProviderType.ooki => 'https://api.ookiapi.com/v1',
@@ -407,7 +415,7 @@ final List<AiProvider> aiProviderBuiltinDefaults = [
       'deepseek-v3-2-251201',
     ],
     imageModels: imageModelsForProvider('doubao'),
-    embeddingModels: ['doubao-embedding-vision-251215'],
+    embeddingModels: const [],
     temperature: 0.7,
     maxTurns: 512,
     proxyUrl: '',
@@ -486,7 +494,7 @@ final List<AiProvider> aiProviderBuiltinDefaults = [
       'o4-mini',
     ],
     imageModels: ['gpt-image-2'],
-    embeddingModels: ['text-embedding-3-large', 'text-embedding-3-small'],
+    embeddingModels: const [],
     temperature: 0.7,
     maxTurns: 512,
     proxyUrl: '',
@@ -514,7 +522,7 @@ final List<AiProvider> aiProviderBuiltinDefaults = [
       'gemini-2.5-flash',
     ],
     imageModels: ['gemini-3.1-flash-image-preview', 'gemini-2.5-flash-image'],
-    embeddingModels: ['gemini-embedding-001'],
+    embeddingModels: const [],
     temperature: 0.7,
     maxTurns: 512,
     proxyUrl: '',
@@ -694,7 +702,6 @@ extension AiProviderX on AiProvider {
 
   bool get hasModels =>
       availableModels.isNotEmpty ||
-      availableEmbeddingModels.isNotEmpty ||
       availableImageModels.isNotEmpty ||
       availableVideoModels.isNotEmpty ||
       availableAudioModels.isNotEmpty;
@@ -743,11 +750,6 @@ extension AiProviderX on AiProvider {
       ? _normalizeModels(imageModels)
       : const [];
 
-  List<String> get availableEmbeddingModels =>
-      supportsModelKind(AiModelKind.embedding)
-      ? _normalizeModels(embeddingModels)
-      : const [];
-
   List<String> get availableAudioModels => supportsModelKind(AiModelKind.audio)
       ? _normalizeModels(audioModels)
       : const [];
@@ -761,7 +763,6 @@ extension AiProviderX on AiProvider {
     return switch (kind) {
       AiModelKind.chat => availableModels,
       AiModelKind.image => availableImageModels,
-      AiModelKind.embedding => availableEmbeddingModels,
       AiModelKind.video => availableVideoModels,
       AiModelKind.audio => availableAudioModels,
     };
@@ -925,20 +926,16 @@ class AiSettings {
   final String? defaultChatModelId;
   final String? defaultChatReasoningEffort;
   final String? defaultImageModelId;
-  final String? defaultEmbeddingModelId;
   final String? defaultPlannerModelId;
   final String? defaultWriterModelId;
-  final String? defaultSegmenterModelId;
 
   const AiSettings({
     this.providers = const [],
     this.defaultChatModelId,
     this.defaultChatReasoningEffort,
     this.defaultImageModelId,
-    this.defaultEmbeddingModelId,
     this.defaultPlannerModelId,
     this.defaultWriterModelId,
-    this.defaultSegmenterModelId,
   });
 
   factory AiSettings.defaults() {
@@ -962,10 +959,8 @@ class AiSettings {
       defaultChatModelId: json['defaultChatModelId'] as String?,
       defaultChatReasoningEffort: json['defaultChatReasoningEffort'] as String?,
       defaultImageModelId: json['defaultImageModelId'] as String?,
-      defaultEmbeddingModelId: json['defaultEmbeddingModelId'] as String?,
       defaultPlannerModelId: json['defaultPlannerModelId'] as String?,
       defaultWriterModelId: json['defaultWriterModelId'] as String?,
-      defaultSegmenterModelId: json['defaultSegmenterModelId'] as String?,
     );
   }
 
@@ -974,14 +969,10 @@ class AiSettings {
     if (defaultChatReasoningEffort != null)
       'defaultChatReasoningEffort': defaultChatReasoningEffort,
     if (defaultImageModelId != null) 'defaultImageModelId': defaultImageModelId,
-    if (defaultEmbeddingModelId != null)
-      'defaultEmbeddingModelId': defaultEmbeddingModelId,
     if (defaultPlannerModelId != null)
       'defaultPlannerModelId': defaultPlannerModelId,
     if (defaultWriterModelId != null)
       'defaultWriterModelId': defaultWriterModelId,
-    if (defaultSegmenterModelId != null)
-      'defaultSegmenterModelId': defaultSegmenterModelId,
   };
 
   AiSettings copyWith({
@@ -989,10 +980,8 @@ class AiSettings {
     Object? defaultChatModelId = _sentinel,
     Object? defaultChatReasoningEffort = _sentinel,
     Object? defaultImageModelId = _sentinel,
-    Object? defaultEmbeddingModelId = _sentinel,
     Object? defaultPlannerModelId = _sentinel,
     Object? defaultWriterModelId = _sentinel,
-    Object? defaultSegmenterModelId = _sentinel,
   }) {
     return AiSettings(
       providers: providers ?? this.providers,
@@ -1005,18 +994,12 @@ class AiSettings {
       defaultImageModelId: defaultImageModelId == _sentinel
           ? this.defaultImageModelId
           : defaultImageModelId as String?,
-      defaultEmbeddingModelId: defaultEmbeddingModelId == _sentinel
-          ? this.defaultEmbeddingModelId
-          : defaultEmbeddingModelId as String?,
       defaultPlannerModelId: defaultPlannerModelId == _sentinel
           ? this.defaultPlannerModelId
           : defaultPlannerModelId as String?,
       defaultWriterModelId: defaultWriterModelId == _sentinel
           ? this.defaultWriterModelId
           : defaultWriterModelId as String?,
-      defaultSegmenterModelId: defaultSegmenterModelId == _sentinel
-          ? this.defaultSegmenterModelId
-          : defaultSegmenterModelId as String?,
     );
   }
 
@@ -1046,9 +1029,6 @@ class AiSettings {
       AiModelKind.image: _normalizeModels(
         previous.imageModels,
       ).toSet().difference(_normalizeModels(provider.imageModels).toSet()),
-      AiModelKind.embedding: _normalizeModels(
-        previous.embeddingModels,
-      ).toSet().difference(_normalizeModels(provider.embeddingModels).toSet()),
     };
     return updated._clearDefaultSelectionsWhere((kind, optionId) {
       final prefix = '${provider.id}::';
@@ -1140,14 +1120,12 @@ class AiSettings {
   String? defaultOptionIdForKind(AiModelKind kind) => switch (kind) {
     AiModelKind.chat => defaultChatModelId,
     AiModelKind.image => defaultImageModelId,
-    AiModelKind.embedding => defaultEmbeddingModelId,
     AiModelKind.video || AiModelKind.audio => null,
   };
 
   String? defaultOptionIdForRole(AiModelRole role) => switch (role) {
     AiModelRole.planner => defaultPlannerModelId,
     AiModelRole.writer => defaultWriterModelId,
-    AiModelRole.segmenter => defaultSegmenterModelId,
   };
 
   AiSettings setDefaultOptionId(AiModelKind kind, String? optionId) {
@@ -1165,7 +1143,6 @@ class AiSettings {
               ),
       ),
       AiModelKind.image => copyWith(defaultImageModelId: optionId),
-      AiModelKind.embedding => copyWith(defaultEmbeddingModelId: optionId),
       AiModelKind.video || AiModelKind.audio => throw UnsupportedError(
         'Video requests choose their model explicitly',
       ),
@@ -1177,7 +1154,6 @@ class AiSettings {
     return switch (role) {
       AiModelRole.planner => copyWith(defaultPlannerModelId: optionId),
       AiModelRole.writer => copyWith(defaultWriterModelId: optionId),
-      AiModelRole.segmenter => copyWith(defaultSegmenterModelId: optionId),
     };
   }
 
@@ -1202,13 +1178,8 @@ class AiSettings {
           ? defaultChatReasoningEffort
           : null,
       defaultImageModelId: keep(AiModelKind.image, defaultImageModelId),
-      defaultEmbeddingModelId: keep(
-        AiModelKind.embedding,
-        defaultEmbeddingModelId,
-      ),
       defaultPlannerModelId: keep(AiModelKind.chat, defaultPlannerModelId),
       defaultWriterModelId: keep(AiModelKind.chat, defaultWriterModelId),
-      defaultSegmenterModelId: keep(AiModelKind.chat, defaultSegmenterModelId),
     );
   }
 

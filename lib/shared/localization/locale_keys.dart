@@ -514,6 +514,7 @@ abstract final class LocaleKeys {
   static const productionUnlink = 'screenplay.production.unlink';
   static const productionUnlinkHint = 'screenplay.production.unlinkHint';
   static const productionReference = 'screenplay.production.reference';
+  static const productionMention = 'screenplay.production.mention';
 
   static const productionExportIncomplete =
       'screenplay.production.exportIncomplete';
@@ -4743,10 +4744,6 @@ abstract final class LocaleKeys {
       'settings.provider_fetch_models_no_matches';
   static const settingsProviderFetchModelsSearchHint =
       'settings.provider_fetch_models_search_hint';
-  static const settingsProviderEmbeddingModelsHint =
-      'settings.provider_embedding_models_hint';
-  static const settingsProviderEmbeddingModelsLabel =
-      'settings.provider_embedding_models_label';
   static const settingsProviderImageModelsHint =
       'settings.provider_image_models_hint';
   static const settingsProviderImageModelsLabel =
@@ -4804,6 +4801,8 @@ abstract final class LocaleKeys {
       'settings.provider_description_xai';
   static const settingsProviderDescriptionAnthropic =
       'settings.provider_description_anthropic';
+  static const settingsProviderDescriptionQwenTokenPlan =
+      'settings.provider_description_qwen_token_plan';
   static const settingsProviderDescriptionQwen =
       'settings.provider_description_qwen';
   static const settingsProviderDescriptionGemini =
@@ -4849,6 +4848,15 @@ abstract final class LocaleKeys {
   static const settingsStatusActive = 'settings.status_active';
   static const settingsStatusInactive = 'settings.status_inactive';
   static const settingsStorage = 'settings.storage';
+  static const settingsTrash = 'settings.trash';
+  static const settingsTrashDescription = 'settings.trash_description';
+  static const settingsTrashEmpty = 'settings.trash_empty';
+  static const settingsTrashLoadFailed = 'settings.trash_load_failed';
+  static const settingsTrashDeletedAt = 'settings.trash_deleted_at';
+  static const settingsTrashDaysLeft = 'settings.trash_days_left';
+  static const settingsTrashPurgeSoon = 'settings.trash_purge_soon';
+  static const settingsTrashRestoreSuccess = 'settings.trash_restore_success';
+  static const settingsTrashRestoreFailed = 'settings.trash_restore_failed';
   static const settingsFileWorkspaceDirectory =
       'settings.file_workspace_directory';
   static const settingsFileWorkspaceHint = 'settings.file_workspace_hint';
@@ -5571,8 +5579,6 @@ abstract final class LocaleKeys {
       'workspace.foreshadowing_status_payoff';
   static const foreshadowingStatusAbandoned =
       'workspace.foreshadowing_status_abandoned';
-  static const workspaceIndexRebuildRequiredTitle =
-      'workspace.index_rebuild_required_title';
   static const workspaceItems = 'workspace.items';
   static const workspaceItemsHint = 'workspace.items_hint';
   static const workspaceItemGeneratePhoto = 'workspace.item_generate_photo';
@@ -5750,26 +5756,6 @@ abstract final class LocaleKeys {
   static const workspaceCoverSaveSuccess = 'workspace.cover_save_success';
   static const workspaceCoverSaveFailed = 'workspace.cover_save_failed';
   static const workspaceReadingTime = 'workspace.reading_time';
-  static const workspaceRebuildChapterIndexes =
-      'workspace.rebuild_chapter_indexes';
-  static const workspaceRebuildConfigDisabled =
-      'workspace.rebuild_config_disabled';
-  static const workspaceRebuildConfigMissing =
-      'workspace.rebuild_config_missing';
-  static const workspaceRebuildConfigModelNotSupported =
-      'workspace.rebuild_config_model_not_supported';
-  static const workspaceRebuildConfigNoApiKey =
-      'workspace.rebuild_config_no_api_key';
-  static const workspaceRebuildConfigNoBaseUrl =
-      'workspace.rebuild_config_no_base_url';
-  static const workspaceRebuildConfigNoModels =
-      'workspace.rebuild_config_no_models';
-  static const workspaceRebuildErrors = 'workspace.rebuild_errors';
-  static const workspaceRebuildFailed = 'workspace.rebuild_failed';
-  static const workspaceRebuildPause = 'workspace.rebuild_pause';
-  static const workspaceRebuildProgress = 'workspace.rebuild_progress';
-  static const workspaceRebuildResume = 'workspace.rebuild_resume';
-  static const workspaceRebuildStarted = 'workspace.rebuild_started';
   static const workspaceRollbackChange = 'workspace.rollback_change';
   static const workspaceRollbackAllChanges = 'workspace.rollback_all_changes';
   static const workspaceRollbackAllConfirmMessage =
