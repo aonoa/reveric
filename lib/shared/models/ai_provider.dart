@@ -52,6 +52,7 @@ enum AiProviderType {
   atlascloud,
   purefox,
   purefox_media,
+  moss,
 }
 
 enum ReasoningEffort { none, low, medium, high }
@@ -103,6 +104,13 @@ class AiProviderTypeConfig {
 const Set<AiModelKind> _chatOnlyKinds = {AiModelKind.chat};
 
 const Map<AiProviderType, AiProviderTypeConfig> aiProviderTypeConfigs = {
+  AiProviderType.moss: AiProviderTypeConfig(
+    displayName: 'MOSS',
+    modelIdSource: ModelIdSource.registered,
+    imageProtocol: ImageProtocol.moss_image,
+    audioProtocol: AudioProtocol.moss_audio,
+    fixedBaseUrl: true,
+  ),
   AiProviderType.atlascloud: AiProviderTypeConfig(
     displayName: 'AtlasCloud',
     modelIdSource: ModelIdSource.registered,
@@ -275,6 +283,7 @@ final List<AiProviderType> customAiProviderTypes = List.unmodifiable(
 String aiProviderFixedBaseUrl(AiProviderType type) => switch (type) {
   AiProviderType.qwen_token_plan =>
     'https://token-plan.maas.qianwenaiapi.com/compatible-mode/v1',
+  AiProviderType.moss => 'https://api.mosi.cn/v1',
   AiProviderType.metaso => 'https://metaso.cn/api/minimax',
   AiProviderType.api88 => 'https://api.88api.ai/v1',
   AiProviderType.ooki => 'https://api.ookiapi.com/v1',

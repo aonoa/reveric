@@ -434,6 +434,8 @@ abstract final class LocaleKeys {
       'screenplay.production.speechVoiceIdHint';
   static const productionSpeechInstructions =
       'screenplay.production.speechInstructions';
+  static const productionSpeechInstructionsRequired =
+      'screenplay.production_speech_instructions_required';
   static const productionSpeechInstructionsHint =
       'screenplay.production.speechInstructionsHint';
   static const productionSpeechUsingReference =
@@ -2137,6 +2139,10 @@ abstract final class LocaleKeys {
   static const commonClose = 'common.close';
   static const commonCollapse = 'common.collapse';
   static const commonCollapseSidebar = 'common.collapse_sidebar';
+  static const commonComplexity = 'common.complexity';
+  static const commonComplexityLow = 'common.complexity_low';
+  static const commonComplexityMedium = 'common.complexity_medium';
+  static const commonComplexityHigh = 'common.complexity_high';
   static const commonConfirm = 'common.confirm';
   static const commonContent = 'common.content';
   static const commonContinue = 'common.continue';
@@ -4819,6 +4825,8 @@ abstract final class LocaleKeys {
       'settings.provider_description_volcengine';
   static const settingsProviderDescriptionMinimax =
       'settings.provider_description_minimax';
+  static const settingsProviderDescriptionMoss =
+      'settings.provider_description_moss';
   static const settingsProviderDescriptionAgnes =
       'settings.provider_description_agnes';
   static const settingsProviderDescriptionAtlascloud =

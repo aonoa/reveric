@@ -921,6 +921,7 @@ class _ComposerForm extends HookConsumerWidget {
                                 ),
                                 compact: true,
                                 dropUp: true,
+                                searchable: true,
                                 height: 30,
                                 menuWidth: 300,
                                 leadingIcon: RevericIcons.auto_awesome,

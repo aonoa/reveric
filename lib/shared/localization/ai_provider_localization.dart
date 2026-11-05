@@ -80,6 +80,7 @@ String localizedProviderTypeDescription(
       LocaleKeys.settingsProviderDescriptionVolcengine,
     AiProviderType.metaso => LocaleKeys.settingsProviderDescriptionMetaso,
     AiProviderType.minimax => LocaleKeys.settingsProviderDescriptionMinimax,
+    AiProviderType.moss => LocaleKeys.settingsProviderDescriptionMoss,
     AiProviderType.agnes => LocaleKeys.settingsProviderDescriptionAgnes,
     AiProviderType.atlascloud =>
       LocaleKeys.settingsProviderDescriptionAtlascloud,

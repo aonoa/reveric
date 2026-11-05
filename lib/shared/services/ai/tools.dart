@@ -2979,6 +2979,8 @@ const _resourceDefinitions = <String, _ResourceDefinition>{
           enumValues: ProductionSettings.ratios,
         ),
         read: _FieldRead(path: true),
+        write: _FieldInputUse(field: true),
+        edit: _FieldEdit(),
       ),
       'resolution': _ResourceField(
         value: _ValueSchema(
@@ -2986,6 +2988,8 @@ const _resourceDefinitions = <String, _ResourceDefinition>{
           enumValues: ProductionSettings.resolutions,
         ),
         read: _FieldRead(path: true),
+        write: _FieldInputUse(field: true),
+        edit: _FieldEdit(),
       ),
       'width': _ResourceField(
         value: _ValueSchema(_ValueType.integer),
@@ -3645,6 +3649,8 @@ typedef AiImageGenerationCallback =
       String? size,
       // 出图质量。null 表示不写这个参数，交给服务端默认。
       String? quality,
+      // 复杂度。原样传用户的选择，由生图服务按型号校验并补目录默认值。
+      String? complexity,
     });
 typedef AiImageEditCallback =
     Future<AiImageGenerationResult> Function(
@@ -3659,6 +3665,7 @@ typedef AiMultiImageEditCallback =
       String? model,
       String? size,
       String? quality,
+      String? complexity,
     });
 typedef AiCreateLocationCallback =
     Future<String> Function({

@@ -14,6 +14,7 @@ import '../../utils/storage_paths.dart';
 import '../../models/image/channels.dart';
 import 'codex/image_client.dart';
 import 'image/agnes.dart';
+import 'image/moss.dart';
 import 'image/ark.dart';
 import 'image/atlascloud.dart';
 import 'image/client.dart';
@@ -182,16 +183,16 @@ class AiImageGenerationResult {
 class AiImageGenerationService {
   AiImageGenerationService(
     this._config, {
-    required String model,
-    CodexImageClient Function()? codexImageClientFactory,
-  }) : _model = model,
-       _codexImageClientFactory = codexImageClientFactory;
+    required this._model,
+    this._codexImageClientFactory,
+  });
 
   final AiProvider _config;
   final String _model;
   final CodexImageClient Function()? _codexImageClientFactory;
 
   ImageClient? _client() => switch (_config.typeConfig.imageProtocol) {
+    ImageProtocol.moss_image => MossImageClient(_config),
     ImageProtocol.agnes_image => AgnesImageClient(_config),
     ImageProtocol.qwen_image => QwenImageClient(_config),
     ImageProtocol.ark_image => ArkImageClient(_config),
@@ -213,6 +214,7 @@ class AiImageGenerationService {
     String? model,
     String? size,
     String? quality,
+    String? complexity,
     String? aspectRatio,
     String? resolution,
     ImageSubmitted? onSubmitted,
@@ -220,12 +222,14 @@ class AiImageGenerationService {
     final client =
         _client() ??
         (throw AiImageGenerationException('${_config.displayName} 当前不支持生图。'));
+    final resolvedModel = model ?? _model;
     return client.generate(
       ImageGenerationRequest(
         prompt: prompt,
-        model: model ?? _model,
+        model: resolvedModel,
         size: size,
         quality: quality,
+        complexity: imageComplexityFor(_config.type, resolvedModel, complexity),
         aspectRatio: aspectRatio,
         resolution: resolution,
         onSubmitted: onSubmitted,
@@ -239,6 +243,7 @@ class AiImageGenerationService {
     String? model,
     String? size,
     String? quality,
+    String? complexity,
     String? aspectRatio,
     String? resolution,
   }) {
@@ -248,6 +253,7 @@ class AiImageGenerationService {
       model: model,
       size: size,
       quality: quality,
+      complexity: complexity,
       aspectRatio: aspectRatio,
       resolution: resolution,
     );
@@ -278,6 +284,7 @@ class AiImageGenerationService {
     String? model,
     String? size,
     String? quality,
+    String? complexity,
     String? aspectRatio,
     String? resolution,
     ImageSubmitted? onSubmitted,
@@ -289,12 +296,14 @@ class AiImageGenerationService {
     if (client == null || !client.supportsEdit) {
       throw AiImageGenerationException('${_config.displayName} 当前不支持图片编辑。');
     }
+    final resolvedModel = model ?? _model;
     return client.generate(
       ImageGenerationRequest(
         prompt: prompt,
-        model: model ?? _model,
+        model: resolvedModel,
         size: size,
         quality: quality,
+        complexity: imageComplexityFor(_config.type, resolvedModel, complexity),
         aspectRatio: aspectRatio,
         resolution: resolution,
         images: imageData,

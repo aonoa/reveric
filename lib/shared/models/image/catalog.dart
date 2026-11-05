@@ -21,6 +21,9 @@ class ImageModelCatalogEntry {
 
 /// 运行时目录：获取模型后可登记站点返回的动态型号。
 final imageModelsCatalog = <String, ImageModelCatalogEntry>{
+  // https://platform.moss.cn/docs/reference/images-generations/
+  'moss-image-base-1.0': _mossImage,
+  'moss-image-sft-1.0': _mossImage,
   // https://agnes-ai.com/zh-Hans/docs/agnes-image-20-flash
   'agnes-image-2.0-flash': ImageModelCatalogEntry(
     capabilities: ImageModelCapabilities(
@@ -337,6 +340,14 @@ final imageModelsCatalog = <String, ImageModelCatalogEntry>{
   'ming-image-0.1-design': ImageModelCatalogEntry(
     capabilities: _mingImage01DesignCapabilities,
   ),
+  'gpt-image-2.6-sunburst': ImageModelCatalogEntry(
+    capabilities: _gptImage26Capabilities,
+    requestDefaults: _gptImage26Defaults,
+  ),
+  'gpt-image-2.6-flare': ImageModelCatalogEntry(
+    capabilities: _gptImage26Capabilities,
+    requestDefaults: _gptImage26Defaults,
+  ),
   'gpt-image-2.5-sunburst': ImageModelCatalogEntry(
     capabilities: _gptImage25SunburstCapabilities,
   ),
@@ -457,7 +468,7 @@ final imageModelsCatalog = <String, ImageModelCatalogEntry>{
     capabilities: _recraftV41UtilityProCapabilities,
   ),
   'gpt-5.4-image-2': ImageModelCatalogEntry(
-    capabilities: _gptImage25SunburstCapabilities,
+    capabilities: _gpt54Image2Capabilities,
   ),
   'gemini-3.1-flash-image-preview': ImageModelCatalogEntry(
     capabilities: _gemini31FlashImageCapabilities,
@@ -682,9 +693,28 @@ const _mingImage01DesignCapabilities = ImageModelCapabilities(
 
 const _gptImage25SunburstCapabilities = ImageModelCapabilities(
   ratios: {'1:1', '3:2', '2:3', '4:3', '3:4', '16:9', '9:16', '21:9', 'auto'},
+  resolutions: {'1K', '2K', '4K'},
+  minReferences: 0,
+  maxReferences: 16,
+);
+
+const _gpt54Image2Capabilities = ImageModelCapabilities(
+  ratios: {'1:1', '3:2', '2:3', '4:3', '3:4', '16:9', '9:16', '21:9', 'auto'},
   resolutions: {'auto'},
   minReferences: 0,
   maxReferences: 16,
+);
+
+const _gptImage26Capabilities = ImageModelCapabilities(
+  ratios: {'1:1', '3:2', '2:3', '4:3', '3:4', '16:9', '9:16', '21:9', 'auto'},
+  resolutions: {'1K', '2K', '4K'},
+  minReferences: 0,
+  maxReferences: 16,
+  complexityLevels: {'low', 'medium', 'high'},
+);
+
+const _gptImage26Defaults = ImageRequestDefaults(
+  complexity: ConfigValue('high'),
 );
 
 const _maiImage26Capabilities = ImageModelCapabilities(
@@ -847,3 +877,24 @@ String? recognizeImageModel(String? modelId) =>
 
 ImageModelCatalogEntry? lookupImageModel(String? modelId) =>
     imageModelsCatalog[recognizeImageModel(modelId)];
+
+const _mossImage = ImageModelCatalogEntry(
+  capabilities: ImageModelCapabilities(
+    ratios: {'1:1', '16:9', '9:16', '4:3', '3:4'},
+    resolutions: {'1K'},
+    sizes: {
+      '1K': {
+        '1:1': '1024x1024',
+        '16:9': '1536x864',
+        '9:16': '864x1536',
+        '4:3': '1024x768',
+        '3:4': '768x1024',
+      },
+    },
+    maxPixels: ConfigValue(2097152),
+  ),
+  requestDefaults: ImageRequestDefaults(
+    size: ConfigValue('1024x1024'),
+    responseFormat: ConfigValue('url'),
+  ),
+);

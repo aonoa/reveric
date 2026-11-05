@@ -198,10 +198,17 @@ class _AudioForm extends HookConsumerWidget {
       blockedReason = context.t(LocaleKeys.productionAudioReferenceInvalid);
     }
     if (blockedReason == null &&
-        capability!.model.speech &&
+        capability!.model.requiresVoice &&
         inputs.value.isEmpty &&
         voice.trim().isEmpty) {
       blockedReason = context.t(LocaleKeys.productionSpeechVoiceRequired);
+    }
+    if (blockedReason == null &&
+        capability!.model.requiresInstructions &&
+        instructions.trim().isEmpty) {
+      blockedReason = context.t(
+        LocaleKeys.productionSpeechInstructionsRequired,
+      );
     }
     final saved = useRef('');
     final pending = useRef<Timer?>(null);
@@ -518,10 +525,12 @@ class _AudioForm extends HookConsumerWidget {
                 ),
               ),
               if (capability?.model.supportsInstructions == true &&
-                  (showInstructions.value || instructions.isNotEmpty))
+                  (capability!.model.requiresInstructions ||
+                      showInstructions.value ||
+                      instructions.isNotEmpty))
                 ProductionSpeechInstructions(
                   // 只有用户点开时抢焦点；带着已有说明打开节点时焦点留在台词。
-                  autofocus: instructions.isEmpty,
+                  autofocus: showInstructions.value && instructions.isEmpty,
                 ),
               if (capability != null)
                 ValueListenableBuilder<TextEditingValue>(
@@ -589,6 +598,7 @@ class _AudioForm extends HookConsumerWidget {
                               value: value,
                               compact: true,
                               dropUp: true,
+                              searchable: true,
                               height: 30,
                               menuWidth: 240,
                               leadingIcon: RevericIcons.auto_awesome,
@@ -645,7 +655,7 @@ class _AudioForm extends HookConsumerWidget {
                       ),
                     ),
                   ),
-                  if (capability?.model.speech == true)
+                  if (capability?.model.requiresVoice == true)
                     ProductionSpeechVoiceSelect(
                       capability: capability!.model,
                       hasReference: inputs.value.isNotEmpty,
